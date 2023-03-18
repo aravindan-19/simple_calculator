@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CALCULATOR</title>
+    <link rel="icon" href="CALCULATOR.png">
+    <style>
+        *,
+*:before,
+*:after,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0; 
+}
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.calculator {
+  transform: scale(0.8);
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  grid-template-rows: minmax(150px, auto) repeat(5, 100px);
+  background-color: rgb(237, 234, 234);
+  padding: 25px;
+  border-radius: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+}
+.display {
+  color: rgb(16, 15, 15);
+  grid-column: 1 / 5;
+  display: flex;
+  padding: 25px;
+  justify-content: center;
+  flex-direction: column;
+  word-break: break-all;
+  font-size: 45px;
+  line-height: 40px;
+}
+.secondDisplay {
+  font-size: 35px;
+  color: #777;
+}
+.colTwo {
+  grid-column: span 2;
+}
+button {
+  font-weight: bold;
+  font-size: 30px;
+  outline: none;
+  border-radius: 50px;
+  border: none;
+  margin: 10px;
+  background-color: #444;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+button:hover {
+  background-color: #0f0303;
+ 
+}
+button:active {
+  position: relative;
+  top: 6px;
+  box-shadow: 0 0 0;
+}
+.clear,
+.delete {
+  background-color: #777;
+  box-shadow: 0 6px 0 #555;
+  transition: background-color 0.1s;
+}
+.clear:hover,
+.delete:hover {
+  background-color: #999;
+  box-shadow: 0 6px 0 #888;
+}
+.clear:active,
+.delete:active {
+  box-shadow: 0 0 0;
+}
+.operator,
+.equals {
+  background-color: #d37130;
+  box-shadow: 0 6px 0 #7e4c2b;
+  transition: background-color 0.1s;
+}
+.operator:hover,
+.equals:hover {
+  background-color: #ff9f5e;
+  box-shadow: 0 6px 0 #ce8859;
+}
+.operator:active,
+.equals:active {
+  box-shadow: 0 0 0;
+}
+.active {
+  background-color: #fccaa9;
+  box-shadow: 0 6px 0 #a17b62;
+  color: black;
+}
+.dev {
+  color: white;
+  padding: 20px;
+}
+p {
+  color: white;
+}
+#background-video {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+}  
+
+    </style>
+</head>
+<body>
+    
+    <video id="background-video" autoplay loop muted poster="CAL.mp4">
+        <source src="CAL.mp4" type="video/mp4">
+        </video>
+    <div class="container">
+        <div class="calculator">
+          <div class="display">
+            <div class="currentDisplay"></div>
+          </div>
+          <button class="clear colTwo">AC</button>
+          <button class="delete">🡠</button>
+          <button class="operator">÷</button>
+          <button class="number">7</button>
+          <button class="number">8</button>
+          <button class="number">9</button>
+          <button class="operator">×</button>
+          <button class="number">4</button>
+          <button class="number">5</button>
+          <button class="number">6</button>
+          <button class="operator">-</button>
+          <button class="number">1</button>
+          <button class="number">2</button>
+          <button class="number">3</button>
+          <button class="operator">+</button>
+          <button class="number">0</button>
+          <button class="number">.</button>
+          <button class="equals colTwo">=</button>
+        </div>
+      </div> 
+</body>
+</html>
+<script>
+    const numbers = document.querySelectorAll(".number");
+const operators = document.querySelectorAll(".operator");
+const clearBtn = document.querySelector(".clear");
+const deleteBtn = document.querySelector(".delete");
+const equalsBtn = document.querySelector(".equals");
+const currentDisplay = document.querySelector(".currentDisplay");
+const btns = document.querySelectorAll("button");
+
+let firstNumber = "";
+let secondNumber = "";
+let selectedOperation = undefined;
+
+// ==============FUNCTIONS=====================
+
+const updateDisplay = (number) => {
+  if (firstNumber == "" && secondNumber != "") {
+    currentDisplay.innerText =
+      secondNumber.replace("error", "") + selectedOperation;
+    return;
+  }
+  currentDisplay.innerText = firstNumber;
+};
+const calculation = () => {
+  if (!firstNumber || !secondNumber) return;
+
+  let numA = parseFloat(firstNumber.replace("=", ""));
+  let numB = parseFloat(secondNumber.replace("=", ""));
+  let result = "";
+
+  switch (selectedOperation) {
+    case "+":
+      result = numA + numB;
+      break;
+    case "-":
+      result = numB - numA;
+      break;
+    case "×":
+      result = numA * numB;
+      break;
+    case "÷":
+      if (numA == 0) {
+        clear();
+        // firstNumber = 'error'
+        updateDisplay();
+        return;
+      }
+      result = numB / numA;
+      break;
+    default:
+      break;
+  }
+  firstNumber = "= " + result.toString();
+  secondNumber = "";
+  updateDisplay();
+};
+const clear = () => {
+  firstNumber = "";
+  secondNumber = "";
+  selectedOperation = undefined;
+  updateDisplay();
+};
+const removeActive = () => {
+  for (const a of operators) {
+    a.classList.remove("active");
+  }
+};
+
+// ================BUTTONS=====================
+
+numbers.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (firstNumber.length == 11) return;
+    if (firstNumber.toString().includes("=")) {
+      clear();
+      updateDisplay();
+    }
+
+    if (btn.innerText == "." && firstNumber.includes(".")) return;
+
+    firstNumber = firstNumber + btn.innerText;
+    updateDisplay();
+  });
+});
+
+operators.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    removeActive();
+    btn.classList.add("active");
+
+    if (firstNumber == "") {
+      if (secondNumber != "") {
+        selectedOperation = btn.innerText;
+        updateDisplay();
+        return;
+      } else {
+        return;
+      }
+    }
+    if (secondNumber != "") {
+      calculation();
+    }
+
+    selectedOperation = btn.innerText;
+    secondNumber = firstNumber;
+    firstNumber = "";
+    updateDisplay();
+  });
+});
+
+equalsBtn.addEventListener("click", () => {
+  calculation();
+  removeActive();
+  updateDisplay();
+});
+
+clearBtn.addEventListener("click", () => {
+  removeActive();
+  clear();
+});
+
+deleteBtn.addEventListener("click", () => {
+  if (firstNumber.includes("= ")) {
+    return;
+  }
+
+  firstNumber = firstNumber.substring(0, firstNumber.length - 1);
+  updateDisplay();
+});
+
+</script>
